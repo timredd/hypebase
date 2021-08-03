@@ -1,0 +1,56 @@
+@import "styles";
+
+.container, .section, .columns {
+  height: 100%;
+}
+
+.columns {
+  align-items: center;
+  padding-bottom: 25vh;
+}
+
+.column#hero {
+  text-align: left;
+}
+
+.field:not(:last-child) {
+  margin-bottom: .2rem;
+}
+
+p.title {
+  font-size: 4rem;
+  color: rebeccapurple;
+  font-weight: bolder;
+  font-family: Raleway, serif;
+}
+
+p.subtitle {
+  font-size: 2rem;
+  font-weight: normal;
+  font-family: Avenir, serif;
+}
+
+.field {
+  max-width: 80rem;
+}
+
+p.help::before {
+  content: "\00a0";
+}
+
+p.control#submitLabel {
+  padding-top: 1rem;
+}
+
+p.help#login-help {
+  float: right;
+  font-size: 13px;
+}
+
+button.button#submitButton {
+  width: 100%;
+  background-color: rebeccapurple;
+  font-family: Avenir, serif;
+  font-weight: bold;
+  font-size: 1.125rem;
+}

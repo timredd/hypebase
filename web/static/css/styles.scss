@@ -1,0 +1,10 @@
+@import "../node_modules/bulma/sass/utilities/initial-variables";
+@import "../node_modules/bulma/sass/utilities/functions";
+
+$pink: #ffb3b3;
+$pink-invert: #fff;
+
+$primary: $pink;
+$primary-invert: $pink-invert;
+
+$is-success: $primary;
