@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ template "head" }}
+    <title>Hypebase</title>
+    <link rel="stylesheet" href="/static/css/register.css"/>
+</head>
+<body class="has-navbar-fixed-top">
+{{ template "navbar" }}
+<div class="container is-fullheight is-full-desktop">
+    <section class="section">
+        <div class="columns is-2">
+            <div class="column" id="hero">
+                <p class="title">Hypebase</p>
+                <p class="subtitle">Get more eyes on your content</p>
+            </div>
+            <div class="column" id="form">
+                <form method="post" action="/register" id="register-form">
+                    <div class="field">
+                        <label class="field-label"><strong>Email</strong></label>
+                        <p class="control has-icons-left has-icons-right">
+                            <input class="input" type="email" name="email" id="email" placeholder="lud@mogulmoves.gov">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas" id="email-validate"></i>
+                            </span>
+                        </p>
+                        <p class="help is-danger" id="email-help"></p>
+                    </div>
+                    <div class="field">
+                        <label class="field-label"><strong>Password</strong></label>
+                        <p class="control has-icons-left has-icons-right">
+                            <input class="input" type="password" name="pass" id="pass" placeholder="••••••••••">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <span class="icon is-small is-right" id="pass-show">
+                                <i class="fas fa-eye" id="pass-show"></i>
+                            </span>
+                        </p>
+                        <p class="help is-danger" id="pass-help"></p>
+                    </div>
+                    <div class="field">
+                        <label class="checkbox" id="save-session">
+                            <input type="checkbox"> Remember me
+                        </label>
+                    </div>
+                    <div class="field">
+                        <p class="control" id="submitLabel">
+                            <button class="button" id="submitButton">
+                                Create my account
+                            </button>
+                        </p>
+                        <p class="help" id="login-help">Already have an account?
+                            <a href="/login">Log in</a>
+                        </p>
+                    </div>
+                </form>
+                <div class="is-divider" data-content="OR"></div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+
+<script>
+    function debounce(fn, delay) {
+        let timer = null;
+        return function () {
+            let context = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                fn.apply(context, args);
+            }, delay);
+        };
+    }
+
+    let email = $('#email'),
+        pass = $('#pass'),
+        emailHelp = $('#email-help'),
+        passHelp = $('#pass-help'),
+
+        registerForm = $('#register-form'),
+        emailValidate = $('#email-validate')
+
+    registerForm.on('submit', function (e) {
+            e.preventDefault()
+
+
+            email.removeClass('is-danger')
+            pass.removeClass('is-danger')
+            emailHelp.text("")
+            passHelp.text("")
+
+            if (!email.val()) {
+                console.log("EMAIL IS EMPTY")
+                $('#email-help').text("Please enter your email")
+                email.addClass('is-danger')
+                return false
+            } else if (!$('#pass').val()) {
+                console.log("PASS IS EMPTY")
+                $('#pass-help').text("Please enter a password")
+                $('#pass').addClass('is-danger')
+                return false
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '/sys/validate_email',
+                data: {'email': email.val()},
+                success: function (resp) {
+                    console.log("EMAIL: " + resp["value"])
+                    if (resp["value"] === false) {
+                        emailValidate.removeClass('fa-check is-success').addClass('fa-times is-danger')
+                        emailValidate.css('color', 'hsl(348, 86%, 61%)')
+                        email.removeClass('is-success').addClass('is-danger')
+                        $('#email-help').text(resp["message"])
+                        return false
+                    } else {
+                        emailValidate.removeClass('fa-times is-danger').addClass('fa-check is-success')
+                        emailValidate.css('color', 'hsl(153, 53%, 53%)')
+                        email.removeClass('is-danger').addClass('is-success')
+                        $('#email-help').text('')
+                        registerForm.off('submit')
+                        registerForm.trigger('submit')
+                    }
+                },
+            })
+        }
+    );
+
+    email.on('change input mouseup', debounce(function () {
+        $.ajax({
+            type: "POST",
+            url: '/sys/validate_email',
+            data: {'email': email.val()},
+            success: function (resp) {
+                console.log("EMAIL: " + resp["value"])
+                if (resp["value"] === false) {
+                    emailValidate.removeClass('fa-check is-success').addClass('fa-times is-danger')
+                    emailValidate.css('color', 'hsl(348, 86%, 61%)')
+                    email.removeClass('is-success').addClass('is-danger')
+                    $('#email-help').text(resp["message"])
+                } else {
+                    emailValidate.removeClass('fa-times is-danger').addClass('fa-check is-success')
+                    emailValidate.css('color', 'hsl(153, 53%, 53%)')
+                    email.removeClass('is-danger').addClass('is-success')
+                    $('#email-help').text('')
+                }
+            },
+        })
+    }, 750));
+
+    $('#pass-show').on('click', function () {
+        if (pass.attr('type') === 'password') {
+            pass.prop('type', 'text')
+        } else {
+            pass.prop('type', 'password')
+        }
+    });
+
+</script>
+
+</html>
